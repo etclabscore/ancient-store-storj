@@ -11,4 +11,4 @@ require (
 	storj.io/uplink v1.1.2
 )
 
-replace github.com/ethereum/go-ethereum v1.9.18 => github.com/etclabscore/core-geth v1.11.9-0.20200729175229-53f107278afe
+replace github.com/ethereum/go-ethereum v1.9.18 => ./_workspace/go-ethereum
