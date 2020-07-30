@@ -102,6 +102,8 @@ github.com/etclabscore/core-geth v1.11.8 h1:S7qh74GM67+MiGjJUMhEss/HPQIPGHUHkQO9
 github.com/etclabscore/core-geth v1.11.8/go.mod h1:KW6R3NH7i9r4iUlhPvZ1cfIk276FqVk+HEoKpvojaEo=
 github.com/etclabscore/core-geth v1.11.9-0.20200729175229-53f107278afe h1:Hlji/TMbosG1iUEQ+K0kMT0K8V8tepviVOnsKYjWmuU=
 github.com/etclabscore/core-geth v1.11.9-0.20200729175229-53f107278afe/go.mod h1:f7ruGEYWykct8ph1U9h9boER/K7+hElYoMTtmfZKz8U=
+github.com/etclabscore/core-geth v1.11.10-0.20200730130117-dc98713fac98 h1:LCSmySxawC0SPzQh1jB8tAoZ+GvtDeEk9XM+AM0rnfw=
+github.com/etclabscore/core-geth v1.11.10-0.20200730130117-dc98713fac98/go.mod h1:f7ruGEYWykct8ph1U9h9boER/K7+hElYoMTtmfZKz8U=
 github.com/ethereum/go-ethereum v1.9.18 h1:+vzvufVD7+OfQa07IJP20Z7AGZsJaw0M6JIA/WQcqy8=
 github.com/ethereum/go-ethereum v1.9.18/go.mod h1:JSSTypSMTkGZtAdAChH2wP5dZEvPGh3nUTuDpH+hNrg=
 github.com/fatih/color v1.3.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
