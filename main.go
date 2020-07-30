@@ -1,11 +1,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"os"
 	"os/signal"
-	"context"
 
 	"github.com/ethereum/go-ethereum/cmd/utils"
 	"github.com/ethereum/go-ethereum/log"
@@ -15,11 +15,10 @@ import (
 )
 
 var (
-
-	storjAPIKey string
+	storjAPIKey    string
 	storjSatellite string
-	storjSecret string
-	app = cli.NewApp()
+	storjSecret    string
+	app            = cli.NewApp()
 )
 
 func init() {
@@ -35,32 +34,21 @@ func init() {
 	storjAPIKey = os.Getenv("STORJ_API_KEY")
 	storjSatellite = os.Getenv("STORJ_SATELLITE")
 	storjSecret = os.Getenv("STORJ_SECRET")
-
-	if(storjAPIKey == "" ){
-		utils.Fatalf("Missing environment variable for STORJ_API_KEY")
-	}
-	if( storjSecret == ""){
-		utils.Fatalf("Missing environment variable for STORJ_SECRET")
-	}
-	if( storjSatellite == ""){
-		utils.Fatalf("Missing one environment variable for STORJ_SATELLITE")
-	}
-
 }
 
 func createStorjFreezerService(ctx context.Context, bucketName string) (*freezerRemoteStorj, chan struct{}) {
 	var (
-		service    *freezerRemoteStorj
-		err        error
-		mets = logMetrics{
-			readMeter: metrics.NewRegisteredMeter("ancient.remote /read", nil), 
-			writeMeter: metrics.NewRegisteredMeter("ancient.remote /write", nil), 
-			sizeGauge: metrics.NewRegisteredGauge("ancient.remote /size", nil),
+		service *freezerRemoteStorj
+		err     error
+		mets    = logMetrics{
+			readMeter:  metrics.NewRegisteredMeter("ancient.remote /read", nil),
+			writeMeter: metrics.NewRegisteredMeter("ancient.remote /write", nil),
+			sizeGauge:  metrics.NewRegisteredGauge("ancient.remote /size", nil),
 		}
 		access = storjAccess{
-			apiKey: storjAPIKey,
+			apiKey:     storjAPIKey,
 			passphrase: storjSecret,
-			satellite: storjSatellite,
+			satellite:  storjSatellite,
 		}
 	)
 
@@ -73,6 +61,15 @@ func createStorjFreezerService(ctx context.Context, bucketName string) (*freezer
 
 func remoteAncientStore(c *cli.Context) error {
 
+	if storjAPIKey == "" {
+		utils.Fatalf("Missing environment variable for STORJ_API_KEY")
+	}
+	if storjSecret == "" {
+		utils.Fatalf("Missing environment variable for STORJ_SECRET")
+	}
+	if storjSatellite == "" {
+		utils.Fatalf("Missing one environment variable for STORJ_SATELLITE")
+	}
 	setupLogFormat(c)
 	bucketName := checkBucketArg(c)
 	utils.CheckExclusive(c, IPCPathFlag, HTTPListenAddrFlag.Name)
@@ -103,7 +100,7 @@ func remoteAncientStore(c *cli.Context) error {
 		}
 		endpoint := fmt.Sprintf("%s:%d", c.GlobalString(utils.HTTPListenAddrFlag.Name), c.Int(RPCPortFlag.Name))
 		listener, err = net.Listen("tcp", endpoint)
-		fmt.Println("listening on",endpoint)
+		fmt.Println("listening on", endpoint)
 		if err != nil {
 			return err
 		}
