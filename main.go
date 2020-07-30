@@ -29,6 +29,7 @@ func init() {
 		RPCPortFlag,
 		HTTPListenAddrFlag,
 		IPCPathFlag,
+		LogLevelFlag,
 	}
 	app.Action = remoteAncientStore
 	storjAPIKey = os.Getenv("STORJ_API_KEY")
