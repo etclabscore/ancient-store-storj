@@ -26,4 +26,8 @@ jobs:
       run: go build .
 
     - name: Test
+      env:
+        STORJ_SATELLITE: us-central-1.tardigrade.io:7777
+        STORJ_API_KEY: ${{ secrets.STORJ_API_KEY }}
+        STORJ_SECRET: ${{ secrets.STORJ_SECRET }}
       run: go test -v .
