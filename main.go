@@ -15,10 +15,7 @@ import (
 )
 
 var (
-	storjAPIKey    string
-	storjSatellite string
-	storjSecret    string
-	app            = cli.NewApp()
+	app = cli.NewApp()
 )
 
 func init() {
@@ -32,12 +29,9 @@ func init() {
 		LogLevelFlag,
 	}
 	app.Action = remoteAncientStore
-	storjAPIKey = os.Getenv("STORJ_API_KEY")
-	storjSatellite = os.Getenv("STORJ_SATELLITE")
-	storjSecret = os.Getenv("STORJ_SECRET")
 }
 
-func createStorjFreezerService(ctx context.Context, bucketName string) (*freezerRemoteStorj, chan struct{}) {
+func createStorjFreezerService(ctx context.Context, bucketName string, access storjAccess) (*freezerRemoteStorj, chan struct{}) {
 	var (
 		service *freezerRemoteStorj
 		err     error
@@ -45,11 +39,6 @@ func createStorjFreezerService(ctx context.Context, bucketName string) (*freezer
 			readMeter:  metrics.NewRegisteredMeter("ancient.remote /read", nil),
 			writeMeter: metrics.NewRegisteredMeter("ancient.remote /write", nil),
 			sizeGauge:  metrics.NewRegisteredGauge("ancient.remote /size", nil),
-		}
-		access = storjAccess{
-			apiKey:     storjAPIKey,
-			passphrase: storjSecret,
-			satellite:  storjSatellite,
 		}
 	)
 
@@ -60,7 +49,12 @@ func createStorjFreezerService(ctx context.Context, bucketName string) (*freezer
 	return service, service.quit
 }
 
-func remoteAncientStore(c *cli.Context) error {
+func checkStorjAccess() storjAccess {
+	var (
+		storjAPIKey    = os.Getenv("STORJ_API_KEY")
+		storjSatellite = os.Getenv("STORJ_SATELLITE")
+		storjSecret    = os.Getenv("STORJ_SECRET")
+	)
 
 	if storjAPIKey == "" {
 		utils.Fatalf("Missing environment variable for STORJ_API_KEY")
@@ -71,11 +65,22 @@ func remoteAncientStore(c *cli.Context) error {
 	if storjSatellite == "" {
 		utils.Fatalf("Missing one environment variable for STORJ_SATELLITE")
 	}
+
+	return storjAccess{
+		apiKey:     storjAPIKey,
+		passphrase: storjSecret,
+		satellite:  storjSatellite,
+	}
+}
+
+func remoteAncientStore(c *cli.Context) error {
+
 	setupLogFormat(c)
+	access := checkStorjAccess()
 	bucketName := checkBucketArg(c)
 	utils.CheckExclusive(c, IPCPathFlag, HTTPListenAddrFlag.Name)
 
-	api, quit := createStorjFreezerService(context.Background(), bucketName)
+	api, quit := createStorjFreezerService(context.Background(), bucketName, access)
 
 	var (
 		rpcServer *rpc.Server
