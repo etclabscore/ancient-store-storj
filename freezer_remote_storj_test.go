@@ -11,10 +11,11 @@ import (
 )
 
 var (
-	ipcPath = os.TempDir() + "ancient.ipc"
+	ipcPath = os.TempDir() + "/ancient.ipc"
 )
 
 func runMain(bucket string) {
+	fmt.Println(ipcPath)
 	os.Args = append([]string{"./ancient-store-storj", "--bucket", fmt.Sprintf("unit-test-%v", rand.Int()), "--loglevel", "3", "--ipcpath", ipcPath})
 	main()
 
