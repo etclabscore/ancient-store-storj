@@ -44,9 +44,7 @@ func getTestCases() []string {
 }
 
 func runTestCase(testCase string) {
-	if "TestTransactionIndices_RemoteFreezer" == testCase {
-		return
-	}
+
 	go func() {
 		runMain(testCase)
 	}()
