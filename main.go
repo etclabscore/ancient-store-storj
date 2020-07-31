@@ -15,7 +15,9 @@ import (
 )
 
 var (
-	app = cli.NewApp()
+	app       = cli.NewApp()
+	stopChan  = make(chan interface{})
+	abortChan = make(chan os.Signal, 1)
 )
 
 func init() {
@@ -29,6 +31,9 @@ func init() {
 		LogLevelFlag,
 	}
 	app.Action = remoteAncientStore
+}
+func stopServer() {
+	stopChan <- struct{}{}
 }
 
 func createStorjFreezerService(ctx context.Context, bucketName string, access storjAccess) (*freezerRemoteStorj, chan struct{}) {
@@ -118,18 +123,23 @@ func remoteAncientStore(c *cli.Context) error {
 		}
 	}()
 
-	abortChan := make(chan os.Signal, 1)
 	signal.Notify(abortChan, os.Interrupt)
 
 	defer func() {
 		// Don't bother imposing a timeout here.
-		select {
-		case sig := <-abortChan:
-			log.Info("Exiting...", "signal", sig)
-			rpcServer.Stop()
-		case <-quit:
-			log.Info("Storj connection closing")
-			rpcServer.Stop()
+		for {
+			select {
+			case sig := <-abortChan:
+				log.Info("Exiting...", "signal", sig)
+				rpcServer.Stop()
+				break
+			case <-stopChan:
+				log.Info("Stopping server")
+				rpcServer.Stop()
+				break
+			case <-quit:
+				log.Info("Storj connection closing, read Close() from ancient store")
+			}
 		}
 	}()
 	return nil

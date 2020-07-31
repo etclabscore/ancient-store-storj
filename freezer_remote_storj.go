@@ -432,7 +432,8 @@ func newFreezerRemoteStorj(ctx context.Context, namespace string, access storjAc
 
 // Close terminates the chain freezer, unmapping all the data files.
 func (f *freezerRemoteStorj) Close(ctx context.Context) error {
-	// I don't see any Close, Stop, or Quit methods for the AWS service.
+	// I don't see any Close, Stop, or Quit methods for the Storj service.
+	f.service.Close()
 	f.quit <- struct{}{}
 	return nil
 }
